@@ -6,27 +6,19 @@ import { google } from 'googleapis';
 import path from 'path';
 import { Readable } from 'stream';
 import nodemailer from 'nodemailer';
-
-
-// En ESM, __dirname no existe por defecto:
 import { fileURLToPath } from 'url';
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
-// 1) Leer JSON del body
 app.use(bodyParser.json({ limit: '10mb' }));
-
-// 2) Servir estáticos desde public/
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 3) Ruta raíz
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// 4) Configurar Google Drive API con credenciales como variable de entorno
 const DRIVE_FOLDER_ID = '1TA92DYE6o0Q-yl5F65xHq_ovLV42RibZ';
 const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
 const auth = new google.auth.GoogleAuth({
@@ -35,7 +27,6 @@ const auth = new google.auth.GoogleAuth({
 });
 const drive = google.drive({ version: 'v3', auth });
 
-// 5) Texto del Agreement
 const agreementText = [
   { title: 'BICYCLE TOUR PARTICIPATION AGREEMENT' },
   { para: 'This agreement governs participation in a bike tour organized by BIZITOUR, a trademark of Digoo Design S.L. (CIF: B67988410), hereinafter referred to as "the Organizer," and the participant, hereinafter referred to as "the Client".' },
@@ -47,29 +38,25 @@ const agreementText = [
       'Use the safety equipment provided.',
       'Respect traffic laws and act prudently during the tour.',
       'Assume responsibility for any damages caused by negligence.'
-    ]
-  },
+    ] },
   { title: '3. Organizer Responsibilities' },
   { list: [
       'Ensure that bicycles and accessories are in optimal condition.',
       'Provide a qualified guide to lead the tour safely.',
       'Offer assistance in case of mechanical issues during the tour.'
-    ]
-  },
+    ] },
   { title: '4. Liability Waiver' },
   { list: [
       'The Organizer is not responsible for injuries or damages caused by the Client’s negligence.',
       'Loss of personal belongings during the tour.',
       'Cancellations or modifications due to weather or force majeure.'
-    ]
-  },
+    ] },
   { title: '5. Cancellations and Refunds' },
   { list: [
       'Full refund if cancelled at least 48 hours in advance.',
       'No refund if cancelled less than 48 hours before the start.',
       'Organizer may reschedule or refund for safety reasons.'
-    ]
-  },
+    ] },
   { title: '6. Data Protection' },
   { para: 'The Client agrees to the use of their personal data solely for the management of the tour, in compliance with GDPR.' },
   { title: '7. Jurisdiction' },
@@ -79,7 +66,6 @@ const agreementText = [
   { para: 'Group leaders sign on behalf of all participants, certifying they have been informed and agree to these terms.' }
 ];
 
-// 6) Endpoint que genera y sube el PDF
 app.post('/submit', async (req, res) => {
   console.log('Received participants:', req.body.participants);
   try {
@@ -88,7 +74,7 @@ app.post('/submit', async (req, res) => {
       return res.status(400).json({ ok: false, error: 'No participants provided' });
     }
 
-    const today = new Date().toISOString().slice(0,10);
+    const today = new Date().toISOString().slice(0, 10);
     const first = participants[0];
     const id = Date.now() + '-' + Math.random().toString(36).substring(2, 8);
     const filename = `${today}-${first.firstName}_${first.lastName}-${id}.pdf`;
@@ -99,6 +85,7 @@ app.post('/submit', async (req, res) => {
     });
     const buffers = [];
     doc.on('data', buffers.push.bind(buffers));
+
     doc.on('end', async () => {
       const pdfBuffer = Buffer.concat(buffers);
       const pdfStream = Readable.from(pdfBuffer);
@@ -111,66 +98,54 @@ app.post('/submit', async (req, res) => {
         },
         media: { mimeType: 'application/pdf', body: pdfStream }
       });
-      doc.on('end', async () => {
-        const pdfBuffer = Buffer.concat(buffers);
-        const pdfStream = Readable.from(pdfBuffer);
-      
-        const driveRes = await drive.files.create({
-          requestBody: {
-            name: filename,
-            mimeType: 'application/pdf',
-            parents: [DRIVE_FOLDER_ID]
-          },
-          media: { mimeType: 'application/pdf', body: pdfStream }
-        });
-      
-        // Bloque nodemailer
-        const transporter = nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-            user: process.env.GMAIL_USER,
-            pass: process.env.GMAIL_PASS
+
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.GMAIL_USER,
+          pass: process.env.GMAIL_PASS
+        }
+      });
+
+      const recipientEmails = participants.map(p => p.email).join(',');
+
+      await transporter.sendMail({
+        from: `"BiziTour" <${process.env.GMAIL_USER}>`,
+        to: recipientEmails,
+        subject: 'Confirmación de participación - BiziTour 🚴',
+        text: 'Gracias por participar en BiziTour. Adjuntamos el acuerdo de participación firmado.',
+        attachments: [
+          {
+            filename: filename,
+            content: pdfBuffer
           }
-        });
-      
-        const recipientEmails = participants.map(p => p.email).join(',');
-      
-        await transporter.sendMail({
-          from: `"BiziTour" <${process.env.GMAIL_USER}>`,
-          to: recipientEmails,
-          subject: 'Confirmación de participación - BiziTour 🚴',
-          text: 'Gracias por participar en BiziTour. Adjuntamos el acuerdo de participación firmado.',
-          attachments: [
-            {
-              filename: filename,
-              content: pdfBuffer
-            }
-          ]
-        });
-      
-        res.json({ ok: true, fileId: driveRes.data.id });
-      }); // 👈 Asegúrate de cerrar este
-      
+        ]
+      });
+
+      res.json({ ok: true, fileId: driveRes.data.id });
+    });
 
     const drawFrame = () => {
       doc.save()
-         .lineWidth(1)
-         .strokeColor('#333')
-         .rect(doc.page.margins.left/2, doc.page.margins.top/2,
-               doc.page.width - doc.page.margins.left,
-               doc.page.height - doc.page.margins.top)
-         .stroke()
-         .restore();
+        .lineWidth(1)
+        .strokeColor('#333')
+        .rect(
+          doc.page.margins.left / 2,
+          doc.page.margins.top / 2,
+          doc.page.width - doc.page.margins.left,
+          doc.page.height - doc.page.margins.top
+        )
+        .stroke()
+        .restore();
     };
 
     drawFrame();
 
-    doc.image(path.join(__dirname, 'public', 'bicitourlogo.png'),
-              doc.page.margins.left, 80, { width: 80 });
+    doc.image(path.join(__dirname, 'public', 'bicitourlogo.png'), doc.page.margins.left, 80, { width: 80 });
     doc.font('Times-Bold')
-       .fontSize(18)
-       .text('BIZITOUR MÁLAGA', { align: 'center' })
-       .moveDown(2);
+      .fontSize(18)
+      .text('BIZITOUR MÁLAGA', { align: 'center' })
+      .moveDown(2);
 
     doc.font('Times-Roman').fontSize(11).fillColor('#000');
     agreementText.forEach(item => {
@@ -178,8 +153,7 @@ app.post('/submit', async (req, res) => {
         doc.moveDown(0.5).font('Times-Bold').fontSize(12).text(item.title);
       }
       if (item.para) {
-        doc.moveDown(0.2).font('Times-Roman').fontSize(11)
-           .text(item.para, { align: 'justify', indent: 20, paragraphGap: 6 });
+        doc.moveDown(0.2).font('Times-Roman').fontSize(11).text(item.para, { align: 'justify', indent: 20, paragraphGap: 6 });
       }
       if (item.list) {
         item.list.forEach(line => {
@@ -191,30 +165,28 @@ app.post('/submit', async (req, res) => {
     doc.addPage();
     drawFrame();
     doc.font('Times-Bold').fontSize(14)
-       .text('PARTICIPANTS', { align: 'center', underline: true })
-       .moveDown(1);
+      .text('PARTICIPANTS', { align: 'center', underline: true })
+      .moveDown(1);
 
-    participants.forEach((p,i) => {
+    participants.forEach((p, i) => {
       doc.font('Times-Bold').fontSize(12)
-         .text(`${i+1}. ${p.firstName} ${p.lastName}`, { continued: true })
-         .font('Times-Roman')
-         .fontSize(11)
-         .text(` — ${p.email} | ${p.phone} | ${p.date}`)
-         .moveDown(0.5);
+        .text(`${i + 1}. ${p.firstName} ${p.lastName}`, { continued: true })
+        .font('Times-Roman')
+        .fontSize(11)
+        .text(` — ${p.email} | ${p.phone} | ${p.date}`)
+        .moveDown(0.5);
 
       const imgData = p.signature.replace(/^data:image\/png;base64,/, '');
-      const imgBuf  = Buffer.from(imgData, 'base64');
+      const imgBuf = Buffer.from(imgData, 'base64');
       doc.image(imgBuf, { width: 120 }).moveDown(1);
     });
 
     doc.end();
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ ok: false, error: err.message });
   }
 });
 
-// 7) Arrancar servidor
 const PORT = 3000;
 app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
