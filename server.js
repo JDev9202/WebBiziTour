@@ -112,8 +112,8 @@ app.post('/submit', async (req, res) => {
       await transporter.sendMail({
         from: `"BiziTour" <${process.env.GMAIL_USER}>`,
         to: recipientEmails,
-        subject: 'Confirmación de participación - BiziTour 🚴',
-        text: 'Gracias por participar en BiziTour. Adjuntamos el acuerdo de participación firmado.',
+        subject: '✨ Welcome to BiziTour – Participation Confirmed 🚴',
+        text: 'Thank you for joining BiziTour. Please find your signed participation agreement attached.',
         attachments: [
           {
             filename: filename,
