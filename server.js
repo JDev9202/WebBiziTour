@@ -5,6 +5,8 @@ import PDFDocument from 'pdfkit';
 import { google } from 'googleapis';
 import path from 'path';
 import { Readable } from 'stream';
+import nodemailer from 'nodemailer';
+
 
 // En ESM, __dirname no existe por defecto:
 import { fileURLToPath } from 'url';
@@ -109,9 +111,46 @@ app.post('/submit', async (req, res) => {
         },
         media: { mimeType: 'application/pdf', body: pdfStream }
       });
-
-      res.json({ ok: true, fileId: driveRes.data.id });
-    });
+      doc.on('end', async () => {
+        const pdfBuffer = Buffer.concat(buffers);
+        const pdfStream = Readable.from(pdfBuffer);
+      
+        const driveRes = await drive.files.create({
+          requestBody: {
+            name: filename,
+            mimeType: 'application/pdf',
+            parents: [DRIVE_FOLDER_ID]
+          },
+          media: { mimeType: 'application/pdf', body: pdfStream }
+        });
+      
+        // ✅ 7) Enviar correo con PDF adjunto
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: process.env.GMAIL_USER,
+            pass: process.env.GMAIL_PASS
+          }
+        });
+      
+        const recipientEmails = participants.map(p => p.email).join(',');
+      
+        await transporter.sendMail({
+          from: `"BiziTour" <${process.env.GMAIL_USER}>`,
+          to: recipientEmails,
+          subject: 'Confirmación de participación - BiziTour 🚴',
+          text: 'Gracias por participar en BiziTour. Adjuntamos el acuerdo de participación firmado.',
+          attachments: [
+            {
+              filename: filename,
+              content: pdfBuffer
+            }
+          ]
+        });
+      
+        // 👇 Respuesta al cliente
+        res.json({ ok: true, fileId: driveRes.data.id });
+      });
 
     const drawFrame = () => {
       doc.save()
