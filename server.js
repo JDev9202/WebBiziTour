@@ -124,7 +124,7 @@ app.post('/submit', async (req, res) => {
           media: { mimeType: 'application/pdf', body: pdfStream }
         });
       
-        // ✅ 7) Enviar correo con PDF adjunto
+        // Bloque nodemailer
         const transporter = nodemailer.createTransport({
           service: 'gmail',
           auth: {
@@ -148,9 +148,9 @@ app.post('/submit', async (req, res) => {
           ]
         });
       
-        // 👇 Respuesta al cliente
         res.json({ ok: true, fileId: driveRes.data.id });
-      });
+      }); // 👈 Asegúrate de cerrar este
+      
 
     const drawFrame = () => {
       doc.save()
