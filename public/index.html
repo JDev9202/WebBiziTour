@@ -495,16 +495,22 @@
 
 
 
-    finishBtn.addEventListener('click', () => {
-      modal.style.display = 'none';
-      container.innerHTML = '';
-      signaturePads = [];
-      signatureAccepted = [];
-      count = 0;
-      addPart();
-      formContainer.style.display = 'none';
-      intro.style.display = 'block';
-    });
+finishBtn.addEventListener('click', () => {
+  modal.style.display = 'none';
+  container.innerHTML = '';
+  signaturePads = [];
+  signatureAccepted = [];
+  count = 0;
+  addPart();
+  formContainer.style.display = 'none';
+  intro.style.display = 'block';
+
+  // 🔵 Restaurar bien el botón Submit All
+  submitBtn.disabled = false;
+  submitBtn.innerHTML = "Submit All"; // ✅ Esto borra también el spinner
+});
+
+
 
     emailCopyBtn.addEventListener('click', () => {
       alert('Email copy functionality not implemented yet.');
