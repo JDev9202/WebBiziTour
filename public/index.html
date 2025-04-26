@@ -19,6 +19,24 @@
       --spacing: 1.5rem;
       --transition: 0.3s ease;
     }
+
+    .spinner {
+  border: 3px solid #f3f3f3; /* Gris claro */
+  border-top: 3px solid #3498db; /* Azul */
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
     *, *::before, *::after { box-sizing: border-box; }
     body {
       margin: 0;
@@ -438,32 +456,44 @@
     addPart();
 
     document.getElementById('form').addEventListener('submit', async e => {
-      e.preventDefault();
-      const participants = Array.from(container.children).map((part, i) => ({
-        firstName: part.querySelector('input[name="firstName"]').value,
-        lastName : part.querySelector('input[name="lastName"]').value,
-        email    : part.querySelector('input[name="email"]').value,
-        phone    : part.querySelector('input[name="phone"]').value,
-        date     : part.querySelector('input[name="date"]').value,
-        agree    : part.querySelector('input[name="agree"]').checked,
-        signature: signaturePads[i].toDataURL()
-      }));
-      try {
-        const res = await fetch('/submit', {
-          method : 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body   : JSON.stringify({ participants })
-        });
-        const data = await res.json();
-        if (data.ok) {
-          modal.style.display = 'flex';
-        } else {
-          alert('Error sending: ' + data.error);
-        }
-      } catch {
-        alert('Network error.');
-      }
+  e.preventDefault();
+
+  // Desactivar el botón y agregar spinner
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = 'Procesando... <div class="spinner"></div>';
+
+  const participants = Array.from(container.children).map((part, i) => ({
+    firstName: part.querySelector('input[name="firstName"]').value,
+    lastName : part.querySelector('input[name="lastName"]').value,
+    email    : part.querySelector('input[name="email"]').value,
+    phone    : part.querySelector('input[name="phone"]').value,
+    date     : part.querySelector('input[name="date"]').value,
+    agree    : part.querySelector('input[name="agree"]').checked,
+    signature: signaturePads[i].toDataURL()
+  }));
+
+  try {
+    const res = await fetch('/submit', {
+      method : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body   : JSON.stringify({ participants })
     });
+    const data = await res.json();
+    if (data.ok) {
+      modal.style.display = 'flex';
+    } else {
+      alert('Error sending: ' + data.error);
+      submitBtn.disabled = false;
+      submitBtn.innerText = "Submit All";
+    }
+  } catch {
+    alert('Network error.');
+    submitBtn.disabled = false;
+    submitBtn.innerText = "Submit All";
+  }
+});
+
+
 
     finishBtn.addEventListener('click', () => {
       modal.style.display = 'none';
