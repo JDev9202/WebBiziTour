@@ -328,6 +328,22 @@
 
     let count = 0, signaturePads = [], signatureAccepted = [];
 
+    function isSignatureValid(signaturePad) {
+  if (signaturePad.isEmpty()) {
+    return false; // El lienzo está completamente vacío
+  }
+  
+  const dataUrl = signaturePad.toDataURL();
+  const minDataUrlLength = 5000; // Ajustable: mínimo de datos para considerar válida la firma
+  
+  if (dataUrl.length < minDataUrlLength) {
+    return false; // La firma es demasiado pequeña (ej: solo un puntito)
+  }
+
+  return true; // La firma parece razonable
+}
+
+
     // Mostrar formulario inicial
     nextBtn.addEventListener('click', () => {
       intro.style.display = 'none';
@@ -431,15 +447,21 @@
         updateAdd();
       });
       confirmBtn.addEventListener('click', () => {
-        if (pad.isEmpty()) return alert('Please sign before confirming.');
-        signatureAccepted[idx] = true;
-        part.querySelector('#agreement-content').classList.add('disabled');
-        pad.off();
-        confirmBtn.disabled = true;
-        clearBtn.disabled   = true;
-        part.querySelectorAll('input, .remove-participant-btn').forEach(el => el.disabled = true);
-        updateAdd();
-      });
+  if (!isSignatureValid(pad)) {
+    alert('Please provide a complete and valid signature before confirming.');
+    return; // 🚫 Detener si la firma es inválida
+  }
+
+  // 🔵 Si pasa la validación, continúa todo normal
+  signatureAccepted[idx] = true;
+  part.querySelector('#agreement-content').classList.add('disabled');
+  pad.off();
+  confirmBtn.disabled = true;
+  clearBtn.disabled = true;
+  part.querySelectorAll('input, .remove-participant-btn').forEach(el => el.disabled = true);
+  updateAdd();
+});
+
 
       part.querySelector('.remove-participant-btn').addEventListener('click', () => {
         signaturePads.splice(idx, 1);
