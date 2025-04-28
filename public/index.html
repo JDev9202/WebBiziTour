@@ -327,6 +327,10 @@
     const emailCopyBtn = document.getElementById('email-copy-btn');
 
     let count = 0, signaturePads = [], signatureAccepted = [];
+    
+    // ▶️ Nuevo: array para mantener cada firma como DataURL
+    let signatureDataUrls = [];
+
 
     function isSignatureValid(signaturePad) {
   if (signaturePad.isEmpty()) {
@@ -401,6 +405,10 @@
       const pad = new SignaturePad(canvasEl);
       signaturePads.push(pad);
 
+      // ▶️ Inicializamos el slot para esta firma
+      signatureDataUrls.push('');
+
+
       // 3) Bloquear canvas hasta que se marque checkbox
       canvasEl.style.pointerEvents = 'none';
       canvasEl.style.opacity       = '0.5';
@@ -440,7 +448,12 @@
         updateAdd();
       });
 
-      pad.onEnd = updateAdd;
+      // ▶️ Cuando el usuario termine de pintar, guardamos el DataURL
+      pad.onEnd = () => {
+      signatureDataUrls[idx] = pad.toDataURL();
+    updateAdd();
+      };
+
       clearBtn.addEventListener('click', () => {
         pad.clear();
         signatureAccepted[idx] = false;
@@ -480,6 +493,14 @@
     document.getElementById('form').addEventListener('submit', async e => {
   e.preventDefault();
 
+  // ▶️ Restaurar firmas en Safari (si el canvas se reseteó al scrollear)
+signaturePads.forEach((pad, i) => {
+  if (signatureDataUrls[i] && pad.isEmpty()) {
+    pad.fromDataURL(signatureDataUrls[i]);
+  }
+});
+
+
   // Desactivar el botón y agregar spinner
   submitBtn.disabled = true;
   submitBtn.innerHTML = 'Procesando... <div class="spinner"></div>';
@@ -518,19 +539,12 @@
 
 
 finishBtn.addEventListener('click', () => {
+  // Ocultamos el modal (opcional)
   modal.style.display = 'none';
-  container.innerHTML = '';
-  signaturePads = [];
-  signatureAccepted = [];
-  count = 0;
-  addPart();
-  formContainer.style.display = 'none';
-  intro.style.display = 'block';
-
-  // 🔵 Restaurar bien el botón Submit All
-  submitBtn.disabled = true;
-  submitBtn.innerHTML = "Submit All"; // ✅ Esto borra también el spinner
+  // ▶️ Recargamos la página para limpiar todo el estado
+  window.location.reload();
 });
+
 
 
 
