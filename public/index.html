@@ -519,18 +519,13 @@
 
 
 finishBtn.addEventListener('click', () => {
+  finishBtn.addEventListener('click', () => {
+  // Ocultamos el modal (opcional)
   modal.style.display = 'none';
-  container.innerHTML = '';
-  signaturePads = [];
-  signatureAccepted = [];
-  count = 0;
-  addPart();
-  formContainer.style.display = 'none';
-  intro.style.display = 'block';
+  // ▶️ Recargamos la página para limpiar todo el estado
+  window.location.reload();
+});
 
-  // 🔵 Restaurar bien el botón Submit All
-  submitBtn.disabled = true;
-  submitBtn.innerHTML = "Submit All"; // ✅ Esto borra también el spinner
 });
 
 
