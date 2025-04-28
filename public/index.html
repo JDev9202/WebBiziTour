@@ -324,9 +324,10 @@
     const submitBtn = document.querySelector('form button[type="submit"]');
     const modal = document.getElementById('thankyou-modal');
     const finishBtn = document.getElementById('finish-btn');
-    const emailCopyBtn = document.getElementById('email-copy-btn');
+   
 
     let count = 0, signaturePads = [], signatureAccepted = [];
+    let signatureBackups = [];
 
     function isSignatureValid(signaturePad) {
   if (signaturePad.isEmpty()) {
@@ -373,6 +374,20 @@
       submitBtn.disabled = !ok;
     }
 
+     function restoreSignatureIfNeeded(idx, pad) {
+        const backup = signatureBackups[idx];
+        if (backup) {
+        const img = new Image();
+        img.onload = () => {
+         const ctx = pad._ctx;
+        ctx.clearRect(0, 0, pad.canvas.width, pad.canvas.height);
+        ctx.drawImage(img, 0, 0, pad.canvas.width, pad.canvas.height);
+           };
+        img.src = backup;
+         }
+       }
+
+
     function addPart() {
       count++;
       const clone = templateElem.content.cloneNode(true);
@@ -387,6 +402,11 @@
 
       const canvasEl = part.querySelector('canvas.signature-pad');
 
+      canvasEl.addEventListener('click', () => {
+      restoreSignatureIfNeeded(idx, pad);
+       });
+
+
       // 1) Calibrar el canvas según DPR
       function resizeCanvas() {
         const ratio = window.devicePixelRatio || 1;
@@ -399,6 +419,14 @@
 
       // 2) Crear SignaturePad
       const pad = new SignaturePad(canvasEl);
+      pad.onEnd = () => {
+      signatureBackups[idx] = pad.toDataURL();
+      };
+      
+      canvas.addEventListener('click', () => {
+      restoreSignatureIfNeeded(idx, pad);
+      });
+
       signaturePads.push(pad);
 
       // 3) Bloquear canvas hasta que se marque checkbox
@@ -503,6 +531,10 @@
     const data = await res.json();
     if (data.ok) {
       modal.style.display = 'flex';
+      setTimeout(() => {
+     window.location.reload();
+   }, 2000);
+
     } else {
       alert('Error sending: ' + data.error);
       submitBtn.disabled = false;
@@ -532,11 +564,6 @@ finishBtn.addEventListener('click', () => {
   submitBtn.innerHTML = "Submit All"; // ✅ Esto borra también el spinner
 });
 
-
-
-    emailCopyBtn.addEventListener('click', () => {
-      alert('Email copy functionality not implemented yet.');
-    });
   </script>
 </body>
 </html>
