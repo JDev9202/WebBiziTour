@@ -403,11 +403,15 @@
 
       // 2) Crear SignaturePad
       const pad = new SignaturePad(canvasEl);
-      signaturePads.push(pad);
-
+      
       // ▶️ Inicializamos el slot para esta firma
-      signatureDataUrls.push('');
+       signatureDataUrls.push('');
 
+      // ▶️ Cuando el usuario termine de pintar, guardamos el DataURL
+      pad.onEnd = () => {
+      signatureDataUrls[idx] = pad.toDataURL();
+      updateAdd();
+      };
 
       // 3) Bloquear canvas hasta que se marque checkbox
       canvasEl.style.pointerEvents = 'none';
