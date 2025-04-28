@@ -396,24 +396,9 @@
       }
       setTimeout(resizeCanvas, 0);
       window.addEventListener('resize', resizeCanvas);
-      
-      // 2) Crear SignaturePad
-      let signatureImage = null;
-      const pad = new SignaturePad(canvasEl);
-      
-      window.addEventListener('scroll', () => {
-     if (signatureImage) {
-    const ctx = canvasEl.getContext('2d');
-    const img = new Image();
-    img.src = signatureImage;
-    img.onload = () => {
-      // limpiamos y volvemos a dibujar la imagen guardada
-      ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
-      ctx.drawImage(img, 0, 0, canvasEl.width, canvasEl.height);
-        };
-        }
-      });
 
+      // 2) Crear SignaturePad
+      const pad = new SignaturePad(canvasEl);
       signaturePads.push(pad);
 
       // 3) Bloquear canvas hasta que se marque checkbox
@@ -455,20 +440,17 @@
         updateAdd();
       });
 
-      pad.onEnd = () => {
-       // si el lienzo no está vacío, guardamos su contenido
-      if (!pad.isEmpty()) {
-      signatureImage = canvasEl.toDataURL();
-       }
-     updateAdd();
-      };
-
+      pad.onEnd = updateAdd;
+      clearBtn.addEventListener('click', () => {
+        pad.clear();
+        signatureAccepted[idx] = false;
+        updateAdd();
+      });
       confirmBtn.addEventListener('click', () => {
-     if (!isSignatureValid(pad)) {
+  if (!isSignatureValid(pad)) {
     alert('Please provide a complete and valid signature before confirming.');
     return; // 🚫 Detener si la firma es inválida
   }
-  
 
   // 🔵 Si pasa la validación, continúa todo normal
   signatureAccepted[idx] = true;
@@ -480,12 +462,6 @@
   updateAdd();
 });
 
- clearBtn.addEventListener('click', () => {
-      pad.clear();
-      signatureImage = null;
-      signatureAccepted[idx] = false;
-      updateAdd();
-    });
 
       part.querySelector('.remove-participant-btn').addEventListener('click', () => {
         signaturePads.splice(idx, 1);
@@ -542,12 +518,19 @@
 
 
 finishBtn.addEventListener('click', () => {
-  // Ocultamos el modal (opcional)
   modal.style.display = 'none';
-  // ▶️ Recargamos la página para limpiar todo el estado
-  window.location.reload();
-});
+  container.innerHTML = '';
+  signaturePads = [];
+  signatureAccepted = [];
+  count = 0;
+  addPart();
+  formContainer.style.display = 'none';
+  intro.style.display = 'block';
 
+  // 🔵 Restaurar bien el botón Submit All
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = "Submit All"; // ✅ Esto borra también el spinner
+});
 
 
 
