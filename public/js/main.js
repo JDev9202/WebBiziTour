@@ -7,7 +7,6 @@ const addBtn = document.getElementById('add-participant-btn');
 const submitBtn = document.querySelector('form button[type="submit"]');
 const modal = document.getElementById('thankyou-modal');
 const finishBtn = document.getElementById('finish-btn');
-const emailCopyBtn = document.getElementById('email-copy-btn');
 
 let count = 0, signaturePads = [], signatureAccepted = [];
 
@@ -211,9 +210,24 @@ window.location.reload();
 
 });
 
+// ➡️ Restaurar las firmas guardadas al hacer scroll
+function restoreSignatures() {
+  const parts = container.querySelectorAll('.participant');
+  parts.forEach((part, idx) => {
+    const canvas = part.querySelector('canvas.signature-pad');
+    const saved = signaturePads[idx];
+    if (saved && canvas) {
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      img.src = saved;
+      img.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      };
+    }
+  });
+}
 
-
-emailCopyBtn.addEventListener('click', () => {
-  alert('Email copy functionality not implemented yet.');
-});
+// ➡️ Cada vez que haces scroll, restauramos firmas
+window.addEventListener('scroll', restoreSignatures);
 
