@@ -453,6 +453,7 @@
   }
 
   // 🔵 Si pasa la validación, continúa todo normal
+  signaturePads[idx] = pad.toDataURL();
   signatureAccepted[idx] = true;
   part.querySelector('#agreement-content').classList.add('disabled');
   pad.off();
@@ -491,7 +492,7 @@
     phone    : part.querySelector('input[name="phone"]').value,
     date     : part.querySelector('input[name="date"]').value,
     agree    : part.querySelector('input[name="agree"]').checked,
-    signature: signaturePads[i].toDataURL()
+    signature: signaturePads[i]
   }));
 
   try {
