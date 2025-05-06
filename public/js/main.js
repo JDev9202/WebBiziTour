@@ -1,3 +1,4 @@
+
 const intro = document.getElementById('intro');
 const formContainer = document.getElementById('form-container');
 const nextBtn = document.getElementById('next-btn');
@@ -230,4 +231,3 @@ function restoreSignatures() {
 
 // ➡️ Cada vez que haces scroll, restauramos firmas
 window.addEventListener('scroll', restoreSignatures);
-
