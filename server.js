@@ -174,9 +174,6 @@ const rentAgreement = [
       return res.status(400).json({ ok: false, error: 'No participants provided' });
     }
     
-    });
-    
-
     const today = new Date().toISOString().slice(0, 10);
     const first = participants[0];
     const id = Date.now() + '-' + Math.random().toString(36).substring(2, 8);
