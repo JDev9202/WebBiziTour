@@ -9,18 +9,14 @@ import nodemailer from 'nodemailer';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
 
-
-import multer from 'multer';
-// …
+const __filename = fileURLToPath(import.meta.url);
+const __dirname  = path.dirname(__filename);
 
 // Configura la carpeta donde multer guardará las fotos subidas
 const upload = multer({
   dest: path.join(__dirname, 'uploads/'),
   limits: { fileSize: 5 * 1024 * 1024 } // 5 MB máximo
 });
-
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
