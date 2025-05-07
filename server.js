@@ -8,6 +8,8 @@ import { Readable } from 'stream';
 import nodemailer from 'nodemailer';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
+import fs from 'fs';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
@@ -17,7 +19,7 @@ const upload = multer({
   dest: path.join(__dirname, 'uploads/'),
   limits: { fileSize: 5 * 1024 * 1024 } // 5 MB máximo
 });
-
+const UPLOAD_DIR = path.join(__dirname, 'uploads');
 const app = express();
 
 app.use(bodyParser.json({ limit: '10mb' }));
@@ -212,6 +214,21 @@ const rentAgreement = [
         ]
       });
 
+      // Después de enviar el mail y antes de res.json(...)
+fs.readdir(UPLOAD_DIR, (err, files) => {
+  if (err) {
+    console.error('Error leyendo uploads dir:', err);
+    return;
+  }
+  files.forEach(file => {
+    const filePath = path.join(UPLOAD_DIR, file);
+    fs.unlink(filePath, err => {
+      if (err) console.error('No pude borrar', filePath, err);
+    });
+  });
+});
+
+
       res.json({ ok: true, fileId: driveRes.data.id });
     });
 
@@ -305,7 +322,7 @@ if (formType === 'rent' && req.file) {
 
   doc.moveDown(1)
      .font('Times-Bold').fontSize(14)
-     .text('FOTO DE IDENTIFICACIÓN', { align: 'center', underline: true })
+     .text('Photo ID', { align: 'center', underline: true })
      .moveDown(1);
 
   doc.image(req.file.path, {
