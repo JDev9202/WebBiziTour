@@ -191,32 +191,8 @@
     input:invalid {
       border-color: red;
     }
-<<<<<<< HEAD
-    .participant:hover { transform: translateY(-5px); }
-    .participant h3 { margin-top: 0; color: var(--primary); }
-    .remove-participant-btn {
-      position: absolute; top: var(--spacing); right: var(--spacing);
-      background: #ff4d4d; color: #fff; border: none;
-      border-radius: var(--radius); padding: 0.25rem 0.5rem;
-      font-size: 0.8rem; cursor: pointer; transition: background var(--transition);
-    }
-    .remove-participant-btn:hover { background: #e60000; }
-    .form-group { margin-bottom: var(--spacing); }
-    label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
-    input[type="text"], input[type="email"], input[type="tel"], input[type="date"] {
-      width: 100%; padding: 0.75rem; border: 1px solid #ddd;
-      border-radius: var(--radius); font-size: 1rem;
-      transition: border-color var(--transition);
-    }
-    input:focus { outline: none; border-color: var(--primary-light); }
-    input:invalid { border-color: red; }
-
-    /* ESTILO DEL ACUERDO */
-    #agreement-content {
-=======
 
     .agreement-content {
->>>>>>> f58b973 (Testing)
       background: #fff;
       border: 1px solid #ddd;
       border-radius: var(--radius);
@@ -225,28 +201,6 @@
       overflow-y: auto;
       margin-bottom: var(--spacing);
       line-height: 1.5;
-<<<<<<< HEAD
-    }
-    #agreement-content.disabled {
-      pointer-events: none;
-      opacity: 0.6;
-    }
-    #agreement-content h4 {
-      margin-top: 1rem;
-      margin-bottom: 0.5rem;
-      color: var(--primary);
-      font-weight: 600;
-    }
-    #agreement-content p,
-    #agreement-content li {
-      margin-bottom: 0.5rem;
-      color: var(--text);
-    }
-
-    .checkbox-group { display: flex; align-items: center; gap: 0.5rem; margin-bottom: var(--spacing); }
-
-    /* Canvas signature: solo touch-action */
-=======
       animation: fadeIn 1s ease-in-out;
     }
 
@@ -257,7 +211,6 @@
       margin-bottom: var(--spacing);
     }
 
->>>>>>> f58b973 (Testing)
     canvas.signature-pad {
       width: 100%;
       height: 150px;
@@ -291,8 +244,6 @@
       box-shadow: var(--shadow);
       animation: popIn 0.5s ease;
     }
-<<<<<<< HEAD
-=======
 
     @keyframes popIn {
       from { opacity: 0; transform: scale(0.9); }
@@ -368,7 +319,6 @@
 }
 
 
->>>>>>> f58b973 (Testing)
   </style>
 </head>
 <body>
@@ -380,7 +330,11 @@
     <div id="intro">
       <h2>Welcome to BiziTour Málaga!</h2>
       <p>We're delighted to provide you with a bicycle tour to explore our beautiful city. To ensure a smooth and enjoyable experience, please review and agree to the following terms:</p>
-      <button id="next-btn">Next</button>
+      <div class="btn-group">
+        <button id="btnTour" class="btn">Tour</button>
+        <button id="btnRent" class="btn">Rent</button>
+      </div>
+      
     </div>
     <div id="form-container">
       <button type="button" id="back-btn" class="btn" style="margin-bottom: 1rem;">← Back</button>
@@ -408,51 +362,6 @@
                pattern="^\+?[0-9 ]{7,15}$" required>
       </div>
       <div class="form-group"><label>Date</label><input type="date" name="date" required></div>
-<<<<<<< HEAD
-      <div class="form-group">
-        <div id="agreement-content">
-          <h4>BICYCLE TOUR PARTICIPATION AGREEMENT</h4>
-          <p>This agreement governs participation in a bike tour organized by <strong>BIZITOUR</strong>, a trademark of Digoo Design S.L. (CIF: B67988410), hereinafter referred to as "the Organizer," and the participant, hereinafter referred to as "the Client."</p>
-          <h4>1. Purpose of the Agreement</h4>
-          <p>The Client agrees to participate in a guided bike tour organized by the Organizer, which includes the use of a bicycle, helmet, and accessories (if applicable). The tour details, including route and duration, have been communicated in advance.</p>
-          <h4>2. Client Responsibilities</h4>
-          <ul>
-            <li>Follow the guide’s instructions at all times.</li>
-            <li>Use the safety equipment provided.</li>
-            <li>Respect traffic laws and act prudently during the tour.</li>
-            <li>Assume responsibility for any damages caused to third parties, the equipment, or themselves due to negligence or failure to comply with regulations.</li>
-          </ul>
-          <h4>3. Organizer Responsibilities</h4>
-          <ul>
-            <li>Ensure that bicycles and accessories are in optimal condition.</li>
-            <li>Provide a qualified guide to lead the tour safely.</li>
-            <li>Provide assistance in case of mechanical issues or problems during the tour.</li>
-          </ul>
-          <h4>4. Liability Waiver</h4>
-          <ul>
-            <li>The Organizer shall not be held responsible for injuries, accidents, or damages caused by the Client’s negligence.</li>
-            <li>Loss of personal belongings during the tour.</li>
-            <li>Tour cancellations or modifications due to adverse weather conditions or force majeure.</li>
-          </ul>
-          <h4>5. Cancellations and Refunds</h4>
-          <ul>
-            <li>Cancellations by the Client made at least 48 hours in advance are eligible for a full refund.</li>
-            <li>Cancellations made less than 48 hours in advance will not be refunded.</li>
-            <li>The Organizer reserves the right to modify or cancel the tour for safety reasons, offering rescheduling or a refund.</li>
-          </ul>
-          <h4>6. Data Protection</h4>
-          <p>The Client agrees to the use of their personal data solely for the management of the tour, in compliance with GDPR regulations.</p>
-          <h4>7. Jurisdiction</h4>
-          <p>This agreement is governed by the laws of Spain, with both parties submitting to the courts of the Organizer's registered location.</p>
-          <p><em>"By signing this agreement, the undersigned represents and accepts responsibility for the entire group of participants, who agree to abide by the terms herein."</em></p>
-          <h4>8. Group Participation Clause</h4>
-          <p>In the case of group tours, the Group Leader signs this agreement on behalf of all participants, certifying that they have been informed of and agree to the stated terms. The Group Leader assumes responsibility for any violations by the group members. A participant list must be provided to the organizer, and if required, each member may sign their individual acceptance separately.</p>
-        </div>
-        <div class="checkbox-group">
-          <input type="checkbox" name="agree" disabled>
-          <label>I have read and agree to the Terms &amp; Conditions</label>
-        </div>
-=======
       <!--Campos solo del Rent-->
 <div class="rent-only" style="display: none;">
   <!-- Return Date & Time -->
@@ -510,7 +419,6 @@
               I have read and agree to the Terms &amp; Conditions
             </label>
           </div>
->>>>>>> f58b973 (Testing)
       </div>
       <div class="form-group">
         <label>Signature</label>
