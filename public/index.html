@@ -7,37 +7,24 @@
   <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
   <style>
     :root {
-      --primary: #0066cc;
+      --primary-start: #0066cc;
+      --primary-end:   #00cc99;
+      --primary:       #0066cc;
       --primary-light: #3399ff;
-      --accent: #00cc99;
-      --bg-gradient: linear-gradient(135deg, #e0f7fa, #e8eaf6);
-      --card-bg: #ffffff;
-      --text: #333333;
-      --muted: #666666;
-      --radius: 16px;
-      --shadow: 0 10px 30px rgba(0,0,0,0.1);
-      --spacing: 1.5rem;
-      --transition: 0.3s ease;
+      --accent:        #ff6f61;
+      --bg-overlay:    rgba(0, 0, 0, 0.3);
+      --bg-gradient:   linear-gradient(135deg, #e0f7fa, #e8eaf6);
+      --card-bg:       rgba(255, 255, 255, 0.9);
+      --text:          #202124;
+      --muted:         #666666;
+      --radius:        12px;
+      --spacing:       1rem;
+      --shadow-light:  0 4px 16px rgba(0,0,0,0.1);
+      --shadow:        0 10px 30px rgba(0,0,0,0.1);
+      --transition:    0.3s ease;
     }
-
-    .spinner {
-  border: 3px solid #f3f3f3; /* Gris claro */
-  border-top: 3px solid #3498db; /* Azul */
-  border-radius: 50%;
-  width: 16px;
-  height: 16px;
-  animation: spin 1s linear infinite;
-  display: inline-block;
-  margin-left: 10px;
-  vertical-align: middle;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
     *, *::before, *::after { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: 'Roboto', sans-serif;
@@ -49,7 +36,14 @@
       align-items: flex-start;
       padding: 2rem;
       min-height: 100vh;
+      animation: backgroundFade 15s ease-in-out infinite alternate;
     }
+
+    @keyframes backgroundFade {
+      from { filter: brightness(100%); }
+      to { filter: brightness(90%); }
+    }
+
     .card {
       background: var(--card-bg);
       border-radius: var(--radius);
@@ -57,57 +51,96 @@
       width: 100%;
       max-width: 640px;
       overflow: hidden;
-      animation: fadeIn 0.6s var(--transition);
+      animation: fadeInUp 0.7s ease-out;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
     .header {
-      background: var(--primary);
+      background: linear-gradient(45deg, var(--primary-start), var(--primary-end));
       padding: var(--spacing);
       text-align: center;
       color: #fff;
+      animation: pulseHeader 3s infinite alternate;
     }
+
+    @keyframes pulseHeader {
+      from { filter: brightness(1); }
+      to   { filter: brightness(1.2); }
+    }
+
     .header img {
       max-width: 100px;
       margin-bottom: 0.5rem;
+      animation: floatLogo 4s ease-in-out infinite;
     }
+
+    @keyframes floatLogo {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
     .header h2 {
       font-weight: 700;
       margin: 0;
       font-size: 1.75rem;
     }
+
     #intro {
       padding: var(--spacing);
       text-align: center;
     }
+
     #intro h2 {
       color: var(--primary);
       margin-bottom: 0.5rem;
     }
+
     #intro p {
       color: var(--muted);
       line-height: 1.5;
     }
-    #next-btn {
+
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      gap: var(--spacing);
       margin-top: var(--spacing);
-      background: var(--accent);
+    }
+
+    .btn {
+      background: var(--primary);
       color: #fff;
+      padding: 0.75rem 1.5rem;
       border: none;
       border-radius: var(--radius);
-      padding: 0.75rem 2rem;
       font-size: 1rem;
       cursor: pointer;
-      transition: background var(--transition);
+      transition: all var(--transition);
     }
-    #next-btn:hover { background: var(--primary); }
-    #form-container { display: none; padding: var(--spacing); }
-    form { display: flex; flex-direction: column; }
 
-    /* separación extra entre los botones */
-    #add-participant-btn {
-      margin-bottom: var(--spacing);
+    .btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .btn:not(:disabled):hover {
+      background: var(--primary-light);
+      transform: translateY(-2px);
+    }
+
+    #form-container {
+      display: none;
+      padding: var(--spacing);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      animation: fadeInUp 0.5s ease-in-out;
     }
 
     .participant {
@@ -118,7 +151,47 @@
       padding: var(--spacing);
       position: relative;
       transition: transform var(--transition);
+      animation: fadeInUp 0.5s ease-out;
     }
+
+    .participant:hover {
+      transform: translateY(-3px);
+    }
+
+    .participant h3 {
+      margin-top: 0;
+      color: var(--primary);
+    }
+
+    .form-group {
+      margin-bottom: var(--spacing);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: var(--radius);
+      font-size: 1rem;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.2);
+    }
+
+    input:invalid {
+      border-color: red;
+    }
+<<<<<<< HEAD
     .participant:hover { transform: translateY(-5px); }
     .participant h3 { margin-top: 0; color: var(--primary); }
     .remove-participant-btn {
@@ -140,6 +213,10 @@
 
     /* ESTILO DEL ACUERDO */
     #agreement-content {
+=======
+
+    .agreement-content {
+>>>>>>> f58b973 (Testing)
       background: #fff;
       border: 1px solid #ddd;
       border-radius: var(--radius);
@@ -148,6 +225,7 @@
       overflow-y: auto;
       margin-bottom: var(--spacing);
       line-height: 1.5;
+<<<<<<< HEAD
     }
     #agreement-content.disabled {
       pointer-events: none;
@@ -168,6 +246,18 @@
     .checkbox-group { display: flex; align-items: center; gap: 0.5rem; margin-bottom: var(--spacing); }
 
     /* Canvas signature: solo touch-action */
+=======
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: var(--spacing);
+    }
+
+>>>>>>> f58b973 (Testing)
     canvas.signature-pad {
       width: 100%;
       height: 150px;
@@ -177,16 +267,12 @@
       touch-action: none;
     }
 
-    .signature-buttons { display: flex; gap: var(--spacing); margin-top: 0.5rem; }
-    .btn {
-      background: var(--primary); color: #fff; padding: 0.75rem 1.5rem;
-      border: none; border-radius: var(--radius); font-size: 1rem;
-      cursor: pointer; transition: background var(--transition), transform var(--transition);
+    .signature-buttons {
+      display: flex;
+      gap: var(--spacing);
+      margin-top: 0.5rem;
     }
-    .btn:disabled { background: #ccc; cursor: not-allowed; }
-    .btn:not(:disabled):hover { background: var(--primary-light); transform: translateY(-2px); }
 
-    /* MODAL DE AGRADECIMIENTO */
     #thankyou-modal {
       display: none;
       position: fixed;
@@ -195,6 +281,7 @@
       justify-content: center;
       align-items: center;
     }
+
     #thankyou-modal .modal-content {
       background: #fff;
       border-radius: var(--radius);
@@ -202,17 +289,86 @@
       max-width: 400px;
       text-align: center;
       box-shadow: var(--shadow);
+      animation: popIn 0.5s ease;
     }
-    #thankyou-modal .modal-content h3 {
-      margin-top: 0;
-      color: var(--primary);
+<<<<<<< HEAD
+=======
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
     }
-    #thankyou-modal .modal-content .modal-buttons {
-      margin-top: var(--spacing);
-      display: flex;
-      gap: var(--spacing);
-      justify-content: center;
+
+    @media (max-width: 600px) {
+      body { padding: 1rem; }
+      .card { margin: 0.5rem; }
+      .btn-group { flex-direction: column; }
     }
+  
+    .remove-participant-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: transparent;
+  border: none;
+  color: #ff4d4d;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+  padding: 0.25rem;
+  border-radius: 50%;
+}
+
+.remove-participant-btn:hover {
+  color: #fff;
+  background: #ff4d4d;
+  transform: scale(1.1);
+}
+
+ /* Más espacio entre los dos botones del formulario */
+#add-participant-btn {
+  margin-bottom: var(--spacing);
+}
+
+/* Contenedor de input + spinner + check */
+.upload-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* Oculto por defecto */
+.upload-spinner,
+.upload-check {
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  display: none;
+}
+
+/* Spinner animado (simple) */
+.upload-spinner {
+  border: 2px solid transparent;
+  border-top: 2px solid var(--primary);
+  border-radius: 50%;
+  width: 1rem;
+  height: 1rem;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to { transform: translateY(-50%) rotate(360deg); }
+}
+
+/* Check verde */
+.upload-check {
+  color: #28a745;
+  font-weight: bold;
+}
+
+
+>>>>>>> f58b973 (Testing)
   </style>
 </head>
 <body>
@@ -227,6 +383,7 @@
       <button id="next-btn">Next</button>
     </div>
     <div id="form-container">
+      <button type="button" id="back-btn" class="btn" style="margin-bottom: 1rem;">← Back</button>
       <form id="form">
         <div id="participants-container"></div>
         <button type="button" id="add-participant-btn" class="btn" disabled>Add Participant</button>
@@ -239,7 +396,9 @@
   <template id="participant-template">
     <div class="participant">
       <h3>Participant <span class="index"></span></h3>
-      <button type="button" class="remove-participant-btn">Remove</button>
+      <button type="button" class="remove-participant-btn" title="Remove">
+        ✖
+      </button>      
       <div class="form-group"><label>First Name</label><input type="text" name="firstName" required></div>
       <div class="form-group"><label>Last Name</label><input type="text" name="lastName" required></div>
       <div class="form-group"><label>Email</label><input type="email" name="email" required></div>
@@ -249,6 +408,7 @@
                pattern="^\+?[0-9 ]{7,15}$" required>
       </div>
       <div class="form-group"><label>Date</label><input type="date" name="date" required></div>
+<<<<<<< HEAD
       <div class="form-group">
         <div id="agreement-content">
           <h4>BICYCLE TOUR PARTICIPATION AGREEMENT</h4>
@@ -292,6 +452,65 @@
           <input type="checkbox" name="agree" disabled>
           <label>I have read and agree to the Terms &amp; Conditions</label>
         </div>
+=======
+      <!--Campos solo del Rent-->
+<div class="rent-only" style="display: none;">
+  <!-- Return Date & Time -->
+  <div class="form-group">
+    <label>Return Date &amp; Time</label>
+    <input type="datetime-local" name="returnDateTime" required />
+  </div>
+
+  <!-- You will be Renting the following items -->
+  <fieldset class="form-group">
+    <legend>You will be Renting the following items:</legend>
+
+    <div class="form-group">
+      <label>Vintage Bicycle Qty</label>
+      <input type="number" name="vintageBicycleQty" min="0" />
+    </div>
+    <div class="form-group">
+      <label>Vintage E‑Bike Qty</label>
+      <input type="number" name="vintageEBikeQty" min="0" />
+    </div>
+    <div class="form-group">
+      <label>Lock Qty</label>
+      <input type="number" name="lockQty" min="0" />
+    </div>
+    <div class="form-group">
+      <label>Helmet Qty</label>
+      <input type="number" name="helmetQty" min="0" />
+    </div>
+
+ <!-- Dentro de .rent-only, justo antes de la validación del agreement -->
+ <div class="form-group id-upload-group">
+  <label for="idPhoto">Foto DNI <span class="required">*</span></label>
+  <div class="upload-wrapper">
+    <input 
+      type="file" 
+      id="idPhoto" 
+      name="idPhoto" 
+      accept="image/*" 
+      capture="environment" 
+      required 
+    />
+    <div class="upload-spinner" aria-hidden="true"></div>
+    <div class="upload-check"  aria-hidden="true">✔</div>
+  </div>
+</div>
+  </fieldset>
+</div>
+
+      <div class="form-group">
+        <div class="agreement-content"></div>
+        <div class="form-group">
+          <div class="form-group">
+            <label style="display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap;">
+              <input type="checkbox" name="agree" disabled>
+              I have read and agree to the Terms &amp; Conditions
+            </label>
+          </div>
+>>>>>>> f58b973 (Testing)
       </div>
       <div class="form-group">
         <label>Signature</label>

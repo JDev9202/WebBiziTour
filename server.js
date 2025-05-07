@@ -7,6 +7,18 @@ import path from 'path';
 import { Readable } from 'stream';
 import nodemailer from 'nodemailer';
 import { fileURLToPath } from 'url';
+import multer from 'multer';
+
+
+import multer from 'multer';
+// …
+
+// Configura la carpeta donde multer guardará las fotos subidas
+const upload = multer({
+  dest: path.join(__dirname, 'uploads/'),
+  limits: { fileSize: 5 * 1024 * 1024 } // 5 MB máximo
+});
+
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -66,7 +78,91 @@ const agreementText = [
   { para: 'Group leaders sign on behalf of all participants, certifying they have been informed and agree to these terms.' }
 ];
 
+<<<<<<< HEAD
 app.post('/submit', async (req, res) => {
+=======
+
+const rentAgreement = [
+  
+    { title: 'BICYCLE RENTAL AGREEMENT' },
+  
+    { title: '1. Late Return' },
+    {
+      para: 'If you return the equipment after the agreed time, a late fee of [amount] per hour/day will apply.'
+    },
+  
+    { title: '2. Your Responsibilities' },
+    {
+      list: [
+        'Care: Please take good care of the equipment and return it in the same condition as when you received it. You may be responsible for repair costs if any damage occurs.',
+        'Loss or Theft: In case of loss or theft, the following replacement fees apply:'
+      ]
+    },
+    {
+      list: [
+        'Lock: €15',
+        'Helmet: €20',
+        'Lights, Brakes, or Pedals: €10 each',
+        'Bike Seat: €20',
+        'Wheel: €30',
+        'Baby/Toddler Seat: €50',
+        'Basket: €12',
+        'Vintage City Bike: €450',
+        'Vintage E‑Bike: €1,650'
+      ]
+    },
+  
+    { title: '3. Safety and Compliance' },
+    {
+      para: 'The Client agrees to comply with all traffic laws and regulations and is responsible for any damages (to themselves or third parties) resulting from accidents during bicycle use.'
+    },
+  
+    { title: '4. Liability' },
+    {
+      para: 'BiziTour Malaga isn’t liable for any claims arising from your use of the equipment. By renting from us, you agree to indemnify and hold us harmless from such claims.'
+    },
+  
+    { title: '5. Security Measures' },
+    {
+      list: [
+        'Always lock the bicycle securely when not in use.',
+        'To prevent theft, avoid leaving it outside overnight.',
+        'Lock through the frame and wheels in well-lit areas.'
+      ]
+    },
+  
+    { title: '6. Assistance with Breakdowns and Flat Tires' },
+    {
+      list: [
+        'Breakdowns: Visit our shop at Plaza Montaño, 4 for a free replacement.',
+        'Breakdowns (if returning isn’t feasible): Call a taxi to bring you and the bike back; we’ll cover the fare.',
+        'Breakdowns (if returning isn’t feasible): Have the bike repaired at a nearby shop; we’ll reimburse the cost.',
+        'Flat Tires: Have it repaired at a nearby shop; we’ll cover the full cost.',
+        'Flat Tires (09:00–18:00): Call a taxi to bring you and the bike back; we’ll cover half the fare.'
+      ]
+    },
+  
+    { title: '7. Shop Hours and Late Returns' },
+    {
+      para: 'Our shop closes at 18:00. If you return the bike after closing, it will be considered a 12‑hour extension, and additional fees will apply.'
+    },
+  
+    { title: '8. Governing Law' },
+    {
+      para: 'This agreement is governed by the laws of Spain.'
+    },
+  
+    {
+      para: 'By signing below, you acknowledge that you’ve read, understood, and agree to these terms.'
+    }
+  ];
+  
+
+
+  app.post('/submit',upload.single('idPhoto'),async (req, res) => {
+  console.log('Payload:', req.body);
+  const { formType = 'tour', participants = [] } = req.body;
+>>>>>>> f58b973 (Testing)
   console.log('Received participants:', req.body.participants);
   try {
     const participants = req.body.participants || [];
@@ -147,6 +243,47 @@ app.post('/submit', async (req, res) => {
       .text('BIZITOUR MÁLAGA', { align: 'center' })
       .moveDown(2);
 
+<<<<<<< HEAD
+=======
+      if (formType === 'rent') {
+        doc.moveDown(1)
+           .font('Times-Bold').fontSize(12)
+           .text('RENTAL DETAILS', { underline: true })
+           .moveDown(0.5);
+      
+        // Fecha y hora de vencimiento
+        doc.font('Times-Roman').fontSize(11)
+           .text(`Return Date & Time: ${first.returnDateTime}`)
+           .moveDown(0.3);
+      
+        // Cantidades de artículos
+        doc.text(`Vintage Bicycle Qty: ${first.vintageBicycleQty}`, { indent: 20 })
+           .moveDown(0.2)
+           .text(`Vintage E‑Bike Qty:   ${first.vintageEBikeQty}`, { indent: 20 })
+           .moveDown(0.2)
+           .text(`Lock Qty:            ${first.lockQty}`, { indent: 20 })
+           .moveDown(0.2)
+           .text(`Helmet Qty:          ${first.helmetQty}`, { indent: 20 })
+           .moveDown(1);
+
+           if (req.file) {
+             doc.addPage();
+             drawFrame();
+              doc.font('Times-Bold').fontSize(14)
+            .text('FOTO DE IDENTIFICACIÓN', { align: 'center', underline: true })
+            .moveDown(1);
+                // ajusta fit a un tamaño razonable
+             doc.image(req.file.path, {
+             fit: [250, 250],
+             align: 'center',
+             valign: 'center'
+              });
+            doc.moveDown(1);
+             }
+      }
+      
+
+>>>>>>> f58b973 (Testing)
     doc.font('Times-Roman').fontSize(11).fillColor('#000');
     agreementText.forEach(item => {
       if (item.title) {
