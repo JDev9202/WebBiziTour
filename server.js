@@ -158,13 +158,31 @@ const rentAgreement = [
     console.log('req.file =', req.file);          // your uploaded file metadata
     console.log('req.body =', req.body);
     const formType = req.body.formType || 'tour';
-    let participants = [];
-    try {
-        participants = JSON.parse(req.body.participants);
-      } catch (err) {
-        console.error('Error parsing participants:', err);
-         return res.status(400).json({ ok: false, error: 'Invalid participants JSON' });
-    }
+    app.post('/submit', upload.single('idPhoto'), async (req, res) => {
+      const formType = req.body.formType || 'tour';
+      let participants;
+    
+      // 1) Si multer ya nos dio un array (multipart), lo usamos directo.
+      if (Array.isArray(req.body.participants)) {
+        participants = req.body.participants;
+      }
+      // 2) Si viene como string, parseamos:
+      else if (typeof req.body.participants === 'string') {
+        try {
+          participants = JSON.parse(req.body.participants);
+        } catch (err) {
+          console.error('Error parsing participants:', err);
+          return res.status(400).json({ ok: false, error: 'Invalid participants JSON' });
+        }
+      }
+      // 3) Si no vino nada, error:
+      else {
+        return res.status(400).json({ ok: false, error: 'No participants provided' });
+      }
+    
+      // ... el resto de tu código sigue igual ...
+    });
+    
 
     const today = new Date().toISOString().slice(0, 10);
     const first = participants[0];
