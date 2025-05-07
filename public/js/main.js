@@ -478,10 +478,10 @@ if (formType === 'rent') {
 }
 
 try {
-const res = await fetch('/submit', {
-  method : 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body   : JSON.stringify({ formType, participants })
+  const res = await fetch('/submit', {
+    method: 'POST',
+    // IMPORTANTE: no declares headers, así fetch usa multipart/form-data
+    body: formData
 });
 const data = await res.json();
 if (data.ok) {
