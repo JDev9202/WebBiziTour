@@ -153,14 +153,15 @@ const rentAgreement = [
 
 
   app.post('/submit',upload.single('idPhoto'),async (req, res) => {
-  console.log('req.file =', req.file);        // should log your uploaded file’s metadata
-  console.log('req.body =', req.body); 
-  const { formType = 'tour', participants = [] } = req.body;
-  console.log('Received participants:', req.body.participants);
-  try {
-     const { formType = 'tour', participants = [] } = req.body;
-    if (!participants.length) {
-      return res.status(400).json({ ok: false, error: 'No participants provided' });
+    console.log('req.file =', req.file);          // your uploaded file metadata
+    console.log('req.body =', req.body);
+    const formType = req.body.formType || 'tour';
+    let participants = [];
+    try {
+        participants = JSON.parse(req.body.participants);
+      } catch (err) {
+        console.error('Error parsing participants:', err);
+         return res.status(400).json({ ok: false, error: 'Invalid participants JSON' });
     }
 
     const today = new Date().toISOString().slice(0, 10);
