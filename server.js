@@ -313,10 +313,7 @@ const rentAgreement = [
     });
 
     doc.end();
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ ok: false, error: err.message });
-  }
+ 
 });
 
 const PORT = 3000;
