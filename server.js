@@ -265,7 +265,7 @@ const rentAgreement = [
            .moveDown(0.2)
            .text(`Helmet Qty:          ${first.helmetQty}`, { indent: 20 })
            .moveDown(1);
-
+      
           // ── FOTO DE IDENTIFICACIÓN EN PRIMERA PÁGINA ──
     if (req.file) {
   const imgW = 100;  // ancho deseado
@@ -278,10 +278,7 @@ const rentAgreement = [
 
 doc.moveDown(2); // deja espacio antes de continuar con el resto del contenido
       }
-             
             
-    
-    
     doc.font('Times-Roman').fontSize(11).fillColor('#000');
       const selectedAgreement = formType === 'rent'
       ? rentAgreement
@@ -324,7 +321,6 @@ doc.moveDown(2); // deja espacio antes de continuar con el resto del contenido
     console.error(err);
     res.status(500).json({ ok: false, error: err.message });
   }
-});
 
 const PORT = 3000;
 app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
