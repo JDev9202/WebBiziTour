@@ -267,7 +267,7 @@ const rentAgreement = [
            .moveDown(1);
 
           // ── FOTO DE IDENTIFICACIÓN EN PRIMERA PÁGINA ──
-if (formType === 'rent' && req.file) {
+    if (req.file) {
   const imgW = 100;  // ancho deseado
   const imgH = 100;  // alto deseado
   const x    = doc.page.width - doc.page.margins.right - imgW;
@@ -277,11 +277,11 @@ if (formType === 'rent' && req.file) {
 }
 
 doc.moveDown(2); // deja espacio antes de continuar con el resto del contenido
-
-             }
       }
-      
-
+             
+            
+    
+    
     doc.font('Times-Roman').fontSize(11).fillColor('#000');
       const selectedAgreement = formType === 'rent'
       ? rentAgreement
