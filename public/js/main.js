@@ -478,11 +478,10 @@ if (formType === 'rent') {
 }
 
 try {
-const res = await fetch('/submit', {
-  method : 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body   : JSON.stringify({ formType, participants })
-});
+  const res = await fetch('/submit', {
+     method: 'POST',
+     body: formData     // let the browser set multipart/form-data
+     });
 const data = await res.json();
 if (data.ok) {
   modal.style.display = 'flex';

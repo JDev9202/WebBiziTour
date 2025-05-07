@@ -153,7 +153,8 @@ const rentAgreement = [
 
 
   app.post('/submit',upload.single('idPhoto'),async (req, res) => {
-  console.log('Payload:', req.body);
+  console.log('req.file =', req.file);        // should log your uploaded file’s metadata
+  console.log('req.body =', req.body); 
   const { formType = 'tour', participants = [] } = req.body;
   console.log('Received participants:', req.body.participants);
   try {
