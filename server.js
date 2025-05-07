@@ -9,10 +9,6 @@ import nodemailer from 'nodemailer';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
 
-
-import multer from 'multer';
-// …
-
 // Configura la carpeta donde multer guardará las fotos subidas
 const upload = multer({
   dest: path.join(__dirname, 'uploads/'),
