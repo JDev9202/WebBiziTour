@@ -9,14 +9,18 @@ import nodemailer from 'nodemailer';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname  = path.dirname(__filename);
+
+import multer from 'multer';
+// …
 
 // Configura la carpeta donde multer guardará las fotos subidas
 const upload = multer({
   dest: path.join(__dirname, 'uploads/'),
   limits: { fileSize: 5 * 1024 * 1024 } // 5 MB máximo
 });
+
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
@@ -35,7 +39,7 @@ const auth = new google.auth.GoogleAuth({
 });
 const drive = google.drive({ version: 'v3', auth });
 
-const agreementText = [
+const tourAgreement = [
   { title: 'BICYCLE TOUR PARTICIPATION AGREEMENT' },
   { para: 'This agreement governs participation in a bike tour organized by BIZITOUR, a trademark of Digoo Design S.L. (CIF: B67988410), hereinafter referred to as "the Organizer," and the participant, hereinafter referred to as "the Client".' },
   { title: '1. Purpose of the Agreement' },
@@ -74,9 +78,6 @@ const agreementText = [
   { para: 'Group leaders sign on behalf of all participants, certifying they have been informed and agree to these terms.' }
 ];
 
-<<<<<<< HEAD
-app.post('/submit', async (req, res) => {
-=======
 
 const rentAgreement = [
   
@@ -158,10 +159,9 @@ const rentAgreement = [
   app.post('/submit',upload.single('idPhoto'),async (req, res) => {
   console.log('Payload:', req.body);
   const { formType = 'tour', participants = [] } = req.body;
->>>>>>> f58b973 (Testing)
   console.log('Received participants:', req.body.participants);
   try {
-    const participants = req.body.participants || [];
+     const { formType = 'tour', participants = [] } = req.body;
     if (!participants.length) {
       return res.status(400).json({ ok: false, error: 'No participants provided' });
     }
@@ -239,8 +239,6 @@ const rentAgreement = [
       .text('BIZITOUR MÁLAGA', { align: 'center' })
       .moveDown(2);
 
-<<<<<<< HEAD
-=======
       if (formType === 'rent') {
         doc.moveDown(1)
            .font('Times-Bold').fontSize(12)
@@ -279,9 +277,11 @@ const rentAgreement = [
       }
       
 
->>>>>>> f58b973 (Testing)
     doc.font('Times-Roman').fontSize(11).fillColor('#000');
-    agreementText.forEach(item => {
+      const selectedAgreement = formType === 'rent'
+      ? rentAgreement
+      : tourAgreement;
+      selectedAgreement.forEach(item => {
       if (item.title) {
         doc.moveDown(0.5).font('Times-Bold').fontSize(12).text(item.title);
       }
