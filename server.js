@@ -152,23 +152,13 @@ const rentAgreement = [
   
 
 
-  app.post('/submit', upload.single('idPhoto'), async (req, res) => {
-    // ① Verifica que Multer recibió la foto
-    console.log('req.file =', req.file);
-  
-    // ② body.participants llega como cadena JSON: hay que parsearlo
-    let participants;
-    try {
-      participants = JSON.parse(req.body.participants);
-    } catch {
-      // si viene ya como array, lo usamos tal cual
-      participants = req.body.participants;
-    }
-    const formType = req.body.formType || 'tour';
-    console.log('Parsed participants:', participants);
-  
-    // ③ Ahora tu lógica normal
-    if (!Array.isArray(participants) || participants.length === 0) {
+  app.post('/submit',upload.single('idPhoto'),async (req, res) => {
+  console.log('Payload:', req.body);
+  const { formType = 'tour', participants = [] } = req.body;
+  console.log('Received participants:', req.body.participants);
+  try {
+     const { formType = 'tour', participants = [] } = req.body;
+    if (!participants.length) {
       return res.status(400).json({ ok: false, error: 'No participants provided' });
     }
 
@@ -265,20 +255,24 @@ const rentAgreement = [
            .moveDown(0.2)
            .text(`Helmet Qty:          ${first.helmetQty}`, { indent: 20 })
            .moveDown(1);
-      
-          // ── FOTO DE IDENTIFICACIÓN EN PRIMERA PÁGINA ──
-    if (req.file) {
-  const imgW = 100;  // ancho deseado
-  const imgH = 100;  // alto deseado
-  const x    = doc.page.width - doc.page.margins.right - imgW;
-  const y    = doc.page.margins.top + 30;  // 30pt debajo del margen superior
 
-  doc.image(req.file.path, x, y, { width: imgW, height: imgH });
-}
-
-doc.moveDown(2); // deja espacio antes de continuar con el resto del contenido
+           if (req.file) {
+             doc.addPage();
+             drawFrame();
+              doc.font('Times-Bold').fontSize(14)
+            .text('FOTO DE IDENTIFICACIÓN', { align: 'center', underline: true })
+            .moveDown(1);
+                // ajusta fit a un tamaño razonable
+             doc.image(req.file.path, {
+             fit: [250, 250],
+             align: 'center',
+             valign: 'center'
+              });
+            doc.moveDown(1);
+             }
       }
-            
+      
+
     doc.font('Times-Roman').fontSize(11).fillColor('#000');
       const selectedAgreement = formType === 'rent'
       ? rentAgreement
@@ -321,6 +315,7 @@ doc.moveDown(2); // deja espacio antes de continuar con el resto del contenido
     console.error(err);
     res.status(500).json({ ok: false, error: err.message });
   }
+});
 
 const PORT = 3000;
 app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
