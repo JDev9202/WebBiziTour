@@ -180,7 +180,10 @@ const rentAgreement = [
         return res.status(400).json({ ok: false, error: 'No participants provided' });
       }
     
-      // ... el resto de tu código sigue igual ...
+      const first = participants[0];
+      const today = new Date().toISOString().slice(0, 10);
+      const id    = Date.now() + '-' + Math.random().toString(36).substring(2,8);
+      const filename = `${today}-${first.firstName}_${first.lastName}-${id}.pdf`
     });
     
 
