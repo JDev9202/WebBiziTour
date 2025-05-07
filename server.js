@@ -257,21 +257,7 @@ const rentAgreement = [
            .moveDown(0.2)
            .text(`Helmet Qty:          ${first.helmetQty}`, { indent: 20 })
            .moveDown(1);
-
-           if (req.file) {
-             doc.addPage();
-             drawFrame();
-              doc.font('Times-Bold').fontSize(14)
-            .text('FOTO DE IDENTIFICACIÓN', { align: 'center', underline: true })
-            .moveDown(1);
-                // ajusta fit a un tamaño razonable
-             doc.image(req.file.path, {
-             fit: [250, 250],
-             align: 'center',
-             valign: 'center'
-              });
-            doc.moveDown(1);
-             }
+           
       }
       
 
@@ -311,6 +297,23 @@ const rentAgreement = [
       const imgBuf = Buffer.from(imgData, 'base64');
       doc.image(imgBuf, { width: 120 }).moveDown(1);
     });
+   // — Sólo para rent, y justo tras la última firma —
+if (formType === 'rent' && req.file) {
+  // Si quieres la foto en la misma página, comentas la siguiente línea:
+  // doc.addPage();
+  // drawFrame();
+
+  doc.moveDown(1)
+     .font('Times-Bold').fontSize(14)
+     .text('FOTO DE IDENTIFICACIÓN', { align: 'center', underline: true })
+     .moveDown(1);
+
+  doc.image(req.file.path, {
+    fit:   [250, 250],
+    align: 'center',
+    valign:'center'
+  }).moveDown(1);
+}
 
     doc.end();
  
